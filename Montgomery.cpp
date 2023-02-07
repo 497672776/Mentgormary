@@ -32,14 +32,19 @@ int Montgomery(int r, int n, int x, int y)
 {
     assert( (x < n) && (y < n) );
     int n_zero = n % r;
-    int fai_r = 4; // fai_r = 10 x (1-1/2) x (1-1/5) = 4;
+    // int fai_r = 4; // fai_r = 10 x (1-1/2) x (1-1/5) = 4;  要改---------------------------------------
+    int fai_r = 4; // fai_r = 8 x (1-1/2) = 4;  要改---------------------------------------
     int n_zero_inv = mod_inv(n_zero, r, fai_r);
     // info: (r- n[0])',关于模r的逆，与 r- n[0]'关于模r的逆结果是一样的
     int p = r - n_zero_inv;
-    vector<int> x_arr;
+    vector<int> x_arr, n_arr;
     x_arr = x_extract(x, r);
+    n_arr = x_extract(n, r);
+    while(x_arr.size() < n_arr.size()){
+        x_arr.emplace_back(0);
+    }
     int s = 0;
-    for (int i = 0; i < x_arr.size(); i++)
+    for (int i = 0; i < n_arr.size(); i++)
     {
         int q = (((s % r) + x_arr[i] * (y % r)) * p) % r;
         s = s + x_arr[i] * y + q * n;
@@ -47,10 +52,6 @@ int Montgomery(int r, int n, int x, int y)
         if (s >= n)
         {
             s -= n;
-            if (s >= n)
-            {
-                s -= n;
-            }
         }
     }
     return s;
@@ -95,16 +96,10 @@ int mod_exp(int r, int n, int a, int e)
 
 int main()
 {
-    // int r = 10, n = 79, x = 12, y = 22;
-    int r = 10, n = 79, x = 17, y = 26;
+    int r = 16, n = 79, x = 17, y = 26;
     int result = mod_mul(r, n, x, y);
     cout << result << endl;
 
-    x = 17, y = 21;
-    result = mod_mul(r, n, x, y);
-    cout << result << endl;
-
-    int a = 17, e = 26;
-    result = mod_exp(r, n, a, e);
+    result = mod_exp(r, n, x, y);
     cout << result << endl;
 }
